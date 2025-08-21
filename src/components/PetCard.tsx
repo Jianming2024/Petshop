@@ -1,4 +1,4 @@
-import type {PetDto} from "/Users/janeyfan/Desktop/Exercises/Petshop/Api.ts";
+import type {PetDto} from "../../Api";
 
 type PetCardProps = {
     pet: PetDto;

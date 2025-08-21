@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Navbar from "../components/Navbar";
 import PetCard from "../components/PetCard";
 import {MyApi} from "../MyApi.ts";
-import type {PetDto} from "/Users/janeyfan/Desktop/Exercises/Petshop/Api.ts";
+import type { PetDto } from "../../Api";
 
 export default function Home() {
     const [pets, setPets] = useState<PetDto[]>([]);
