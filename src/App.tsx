@@ -1,35 +1,45 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import {useEffect, useState} from "react";
+import {MyApi} from "./MyApi.ts";
+import type {PetDto} from "../Api.ts";
 
 function App() {
-  const [count, setCount] = useState(0)
+    const [pets, setPets] = useState<PetDto[]>([]);
+    const [loading, setLoading] = useState(true);
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    useEffect(() => {
+        void fetchPets();
+    }, []);
+
+    async function fetchPets() {
+        setLoading(true);
+        try {
+            const res = await MyApi.getPets.petGetPets(); // ✅ correct method
+            setPets(res.data); // payload lives in .data
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    if (loading) return <p>Loading…</p>;
+
+    return (
+        <>
+            <h1>My Amazing Petshop</h1>
+            {pets.length === 0 ? (
+                <p>No pets.</p>
+            ) : (
+                <ul>
+                    {pets.map((p) => (
+                        <li key={p.id}>
+                            <strong>{p.name}</strong>{" "}
+                            {p.breed ? <em>({p.breed})</em> : null}{" "}
+                            {p.sold ? "✅ Sold" : "Available"}
+                        </li>
+                    ))}
+                </ul>
+            )}
+        </>
+    );
 }
 
 export default App
