@@ -1,54 +1,14 @@
-import {useEffect, useState} from "react";
-import {MyApi} from "./MyApi.ts";
-import type {PetDto} from "../Api.ts";
+import { BrowserRouter, Routes, Route } from "react-router";
+import Home from "./pages/Home";
 
-function App() {
-    const [pets, setPets] = useState<PetDto[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        void fetchPets();
-    }, []);
-
-    async function fetchPets() {
-        setLoading(true);
-        try {
-            const res = await MyApi.getPets.petGetPets();
-            setPets(res.data);
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    if (loading) return <p>Loading…</p>;
-
+export default function App() {
     return (
-        <>
-            <h1>My Amazing Petshop</h1>
-            {pets.length === 0 ? (
-                <p>No pets.</p>
-            ) : (
-                <ul style={{ listStyle: "none", padding: 0 }}>
-                    {pets.map((p) => (
-                        <li key={p.id} style={{ marginBottom: "20px" }}>
-                            {p.imgurl && (
-                                <img
-                                    src={p.imgurl}
-                                    alt={p.name}
-                                    style={{ width: "150px", borderRadius: "8px" }}
-                                />
-                            )}
-                            <div>
-                                <strong>{p.name}</strong>{" "}
-                                {p.breed ? <em>({p.breed})</em> : null}{" "}
-                                {p.sold ? "✅ Sold" : "Available"}
-                            </div>
-                        </li>
-                    ))}
-                </ul>
-            )}
-        </>
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<Home />} />
+                {/* <Route path="/pet/:id" element={<PetDetail />} /> */}
+                {/* <Route path="/new" element={<NewPet />} /> */}
+            </Routes>
+        </BrowserRouter>
     );
 }
-
-export default App
