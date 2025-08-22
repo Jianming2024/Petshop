@@ -1,14 +1,15 @@
-import { BrowserRouter, Routes, Route } from "react-router";
+import {createBrowserRouter, RouterProvider} from "react-router";
 import Home from "./pages/Home";
+import {useInitializeDataForMyApp} from "./services/PetService.tsx";
+import PetDetails from "./pages/PetDetails";
+
+const router = createBrowserRouter([
+    { path: "/", element: <Home /> },
+   { path: "/pet/:id", element: <PetDetails /> },
+]);
 
 export default function App() {
-    return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<Home />} />
-                {/* <Route path="/pet/:id" element={<PetDetail />} /> */}
-                {/* <Route path="/new" element={<NewPet />} /> */}
-            </Routes>
-        </BrowserRouter>
-    );
+    useInitializeDataForMyApp();
+
+    return <RouterProvider router={router} />;
 }
