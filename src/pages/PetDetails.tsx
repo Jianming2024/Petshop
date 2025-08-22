@@ -1,34 +1,39 @@
 // src/pages/PetDetails.tsx
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useParams, Link, useNavigate } from "react-router";
 import { useAtomValue } from "jotai";
 import Navbar from "../components/Navbar";
 import { allPetsAtom } from "../atoms";
-import type { PetDto } from "../../Api";
-import { getPetById } from "../services/PetService";
+import { getPetById, usePetsActions } from "../services/PetService";
+import type { PetDto, UpdatePetDto } from "../../Api";
 
 export default function PetDetails() {
     const { id } = useParams<{ id: string }>();
+    const navigate = useNavigate();
     const allPets = useAtomValue(allPetsAtom);
+    const { update, remove } = usePetsActions();
 
     const [pet, setPet] = useState<PetDto | null>(null);
     const [loading, setLoading] = useState(true);
+    const [busy, setBusy] = useState(false);
+    const [err, setErr] = useState<string | null>(null);
 
+    // Load pet (cache first, then API)
     useEffect(() => {
         if (!id) return;
         let cancelled = false;
 
         (async () => {
             try {
-                // try cache first
                 const cached = allPets?.find((p) => p.id === id);
                 if (cached) {
                     if (!cancelled) setPet(cached);
                 } else {
-                    // fetch by id
                     const data = await getPetById(id);
                     if (!cancelled) setPet(data);
                 }
+            } catch {
+                setErr("Failed to load pet.");
             } finally {
                 if (!cancelled) setLoading(false);
             }
@@ -68,14 +73,57 @@ export default function PetDetails() {
         );
     }
 
+    const toggleSold = async () => {
+        if (!pet.id) return;
+        setBusy(true);
+        setErr(null);
+        try {
+            const body: UpdatePetDto = {
+                id: pet.id,
+                name: pet.name,
+                breed: pet.breed,
+                imgurl: pet.imgurl,
+                sold: !pet.sold,
+            };
+            const updated = await update(body); // updates global atom too
+            setPet(updated);
+        } catch {
+            setErr("Could not update pet (public pets cannot be changed).");
+        } finally {
+            setBusy(false);
+        }
+    };
+
+    const onDelete = async () => {
+        if (!pet.id) return;
+        const ok = window.confirm("Delete this pet?");
+        if (!ok) return;
+
+        setBusy(true);
+        setErr(null);
+        try {
+            await remove(pet.id); // updates global atom
+            navigate("/");
+        } catch {
+            setErr("Could not delete pet (public pets cannot be deleted).");
+            setBusy(false);
+        }
+    };
+
     return (
         <>
             <Navbar title="JM Amazing Petshop" />
+
             <section className="container mx-auto px-4 py-6">
-                {/* max width so the detail isn't huge on wide screens */}
+                {err && (
+                    <div className="alert alert-error mb-4">
+                        <span>{err}</span>
+                    </div>
+                )}
+
                 <div className="max-w-2xl mx-auto">
                     <div className="card bg-base-100 shadow-md">
-                        {/* fixed-height, centered image that FITS (no cropping) */}
+                        {/* Image area (fit) */}
                         <figure className="bg-base-200 flex items-center justify-center h-64 sm:h-72 md:h-80">
                             {pet.imgurl ? (
                                 <img
@@ -99,11 +147,30 @@ export default function PetDetails() {
                                 </h2>
                                 {pet.breed ? <div className="badge badge-outline">{pet.breed}</div> : null}
                             </div>
+
+                            <div className="mt-4 flex flex-wrap gap-2">
+                                <button
+                                    className="btn btn-primary"
+                                    onClick={toggleSold}
+                                    disabled={busy}
+                                >
+                                    {pet.sold ? "Mark as Not Sold" : "Mark as Sold"}
+                                </button>
+                                <button
+                                    className="btn btn-error"
+                                    onClick={onDelete}
+                                    disabled={busy}
+                                >
+                                    Delete
+                                </button>
+                                <Link to="/" className="btn" aria-disabled={busy}>
+                                    Back to Home
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
-
         </>
     );
 }
