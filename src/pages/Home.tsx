@@ -63,7 +63,7 @@ export default function Home() {
 
     return (
         <>
-            <Navbar title="JM Amazing Petshop" />
+            <Navbar />
 
             <section className="container mx-auto px-4 py-8">
                 {/* Hero */}
@@ -72,7 +72,7 @@ export default function Home() {
                         <div className="max-w-2xl mx-auto">
                             <h1 className="text-4xl font-extrabold">Find your perfect companion</h1>
                             <p className="py-4 text-base-content/70">
-                                Browse our lovely pets. Click a card to see details.
+                                Browse our lovely pets. Click button "details" to see details.
                             </p>
 
                             <div className="join w-full max-w-xl mx-auto">

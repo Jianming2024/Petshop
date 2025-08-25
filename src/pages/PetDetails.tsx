@@ -37,6 +37,7 @@ export default function PetDetails() {
             } finally {
                 if (!cancelled) setLoading(false);
             }
+
         })();
 
         return () => {
@@ -47,7 +48,7 @@ export default function PetDetails() {
     if (!id) {
         return (
             <>
-                <Navbar title="JM Amazing Petshop" />
+                <Navbar />
                 <div className="p-4 text-error">Invalid pet id.</div>
             </>
         );
@@ -56,7 +57,7 @@ export default function PetDetails() {
     if (loading) {
         return (
             <>
-                <Navbar title="JM Amazing Petshop" />
+                <Navbar />
                 <div className="flex justify-center py-12">
                     <span className="loading loading-spinner loading-lg" />
                 </div>
@@ -67,7 +68,7 @@ export default function PetDetails() {
     if (!pet) {
         return (
             <>
-                <Navbar title="JM Amazing Petshop" />
+                <Navbar />
                 <div className="p-4 text-error">Pet not found.</div>
             </>
         );
@@ -112,7 +113,7 @@ export default function PetDetails() {
 
     return (
         <>
-            <Navbar title="JM Amazing Petshop" />
+            <Navbar />
 
             <section className="container mx-auto px-4 py-6">
                 {err && (

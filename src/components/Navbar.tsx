@@ -2,7 +2,7 @@ import { Link } from "react-router";
 
 type Props = { title?: string };
 
-export default function Navbar({ title = "JM Amazing Petshop" }: Props) {
+export default function Navbar({ title = "JM's Amazing Petshop" }: Props) {
     return (
         <div className="bg-base-100 border-b">
             <div className="container mx-auto px-4">
